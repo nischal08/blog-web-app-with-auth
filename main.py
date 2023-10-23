@@ -67,15 +67,15 @@ def register():
             flash("You've already signed up with that email, log in instead!")
             return redirect(url_for('login'))
         hash_and_salted_password = generate_password_hash(
-                    form.password.data,
-                    method='pbkdf2:sha256',
-                    salt_length=8
-                )
+            form.password.data,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
         new_user = User(name=form.name.data, password=hash_and_salted_password, email=form.email.data)
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect('/')
+        return redirect(url_for('get_all_posts'))
     return render_template("register.html", form=form)
 
 
@@ -93,13 +93,14 @@ def login():
             print(form.password.data)
             print(user.password)
             login_user(user)
-            return redirect(url_for('secrets'))
+            return redirect(url_for('get_all_posts'))
     return render_template("login.html", form=form)
 
 
 @app.route('/logout')
 def logout():
-    return redirect(url_for('get_all_posts'))
+    logout_user()
+    return redirect(url_for('login'))
 
 
 @app.route("/post/<int:post_id>")
